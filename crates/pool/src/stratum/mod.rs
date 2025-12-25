@@ -1,0 +1,1 @@
+// Stratum protocol implementation (placeholder)

@@ -1,0 +1,13 @@
+[app]
+theme = "dark"
+language = "en"
+auto_start = false
+
+[mining]
+auto_detect_devices = true
+auto_assign_algorithms = true
+
+[pool]
+primary = "stratum+tcp://pool.jxminer.com:3333"
+wallet_address = "your_wallet_address_here"
+worker_name = "worker1"
