@@ -28,6 +28,11 @@ async fn main() -> Result<()> {
     // Detect devices
     info!("🔍 Detecting mining devices...");
     let devices = jxpoolminer_devices::detect_all().await?;
+    
+    if devices.is_empty() {
+        anyhow::bail!("❌ No mining devices detected. Please check your hardware and drivers.");
+    }
+    
     info!("✅ Found {} device(s)", devices.len());
     
     for device in &devices {
@@ -45,7 +50,7 @@ async fn main() -> Result<()> {
         fallback: config.pool.fallback.clone(),
         wallet_address: config.pool.wallet_address.clone(),
         worker_name: config.pool.worker_name.clone(),
-        use_tls: false,
+        use_tls: config.pool.use_tls,
     };
     let pool_client = jxpoolminer_pool::Client::connect(&pool_config).await?;
     
