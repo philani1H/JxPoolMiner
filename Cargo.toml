@@ -1,0 +1,54 @@
+[package]
+name = "jxpoolminer"
+version = "1.0.0"
+edition = "2021"
+authors = ["JxPoolMiner Team"]
+description = "Professional cross-platform mining software with GUI"
+license = "MIT"
+repository = "https://github.com/philani1H/JxPoolMiner"
+
+[workspace]
+members = [
+    "crates/core",
+    "crates/devices",
+    "crates/mining",
+    "crates/pool",
+    "crates/gui",
+    "crates/config",
+    "crates/stats",
+    "crates/updater",
+]
+
+[dependencies]
+jxpoolminer-core = { path = "crates/core" }
+jxpoolminer-devices = { path = "crates/devices" }
+jxpoolminer-mining = { path = "crates/mining" }
+jxpoolminer-pool = { path = "crates/pool" }
+jxpoolminer-gui = { path = "crates/gui" }
+jxpoolminer-config = { path = "crates/config" }
+jxpoolminer-stats = { path = "crates/stats" }
+jxpoolminer-updater = { path = "crates/updater" }
+
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+
+[profile.dev]
+opt-level = 0
+
+[[bin]]
+name = "jxpoolminer"
+path = "src/main.rs"
