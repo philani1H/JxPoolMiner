@@ -1,6 +1,6 @@
 use jxpoolminer_core::{Device, MiningJob, Share};
 use anyhow::Result;
-use blake3::Hasher;
+use sha3::{Keccak256, Digest};
 use tokio::sync::mpsc;
 
 pub async fn mine(
@@ -10,10 +10,6 @@ pub async fn mine(
 ) -> Result<Share> {
     let mut nonce = 0u64;
     let target = job.target.clone();
-    let cores = match &device.device_type {
-        jxpoolminer_core::DeviceType::CPU { cores } => *cores,
-        _ => 1,
-    };
     
     loop {
         tokio::select! {
@@ -22,8 +18,8 @@ pub async fn mine(
                 anyhow::bail!("Mining cancelled");
             }
             result = async {
-                for _ in 0..(cores * 1000) {
-                    let hash = gxhash_compute(&job.header, nonce);
+                for _ in 0..5000 {
+                    let hash = ethash_hash(&job.header, nonce);
                     
                     if check_target(&hash, &target) {
                         return Some(Share {
@@ -49,25 +45,26 @@ pub async fn mine(
     }
 }
 
-fn gxhash_compute(header: &[u8], nonce: u64) -> [u8; 32] {
-    let mut hasher = Hasher::new();
+fn ethash_hash(header: &[u8], nonce: u64) -> [u8; 32] {
+    let mut hasher = Keccak256::new();
     hasher.update(header);
     hasher.update(&nonce.to_le_bytes());
-    hasher.update(&(nonce ^ 0xDEADBEEF).to_le_bytes());
     
-    let hash1 = hasher.finalize();
+    let result = hasher.finalize();
+    let mut hash = [0u8; 32];
+    hash.copy_from_slice(&result);
     
-    let mut hasher2 = Hasher::new();
-    hasher2.update(hash1.as_bytes());
-    hasher2.update(&nonce.to_be_bytes());
+    let mut hasher2 = Keccak256::new();
+    hasher2.update(&hash);
+    let result2 = hasher2.finalize();
+    hash.copy_from_slice(&result2);
     
-    let hash2 = hasher2.finalize();
-    *hash2.as_bytes()
+    hash
 }
 
 fn check_target(hash: &[u8; 32], target: &[u8]) -> bool {
     if target.is_empty() {
-        return hash[0] == 0 && hash[1] == 0;
+        return hash[0] == 0 && hash[1] == 0 && hash[2] == 0;
     }
     
     for i in 0..hash.len().min(target.len()) {

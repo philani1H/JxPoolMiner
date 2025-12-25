@@ -1,6 +1,6 @@
 use jxpoolminer_core::{Device, MiningJob, Share};
 use anyhow::Result;
-use blake3::Hasher;
+use sha2::{Sha256, Digest};
 use tokio::sync::mpsc;
 
 pub async fn mine(
@@ -10,10 +10,6 @@ pub async fn mine(
 ) -> Result<Share> {
     let mut nonce = 0u64;
     let target = job.target.clone();
-    let cores = match &device.device_type {
-        jxpoolminer_core::DeviceType::CPU { cores } => *cores,
-        _ => 1,
-    };
     
     loop {
         tokio::select! {
@@ -22,14 +18,19 @@ pub async fn mine(
                 anyhow::bail!("Mining cancelled");
             }
             result = async {
-                for _ in 0..(cores * 1000) {
-                    let hash = gxhash_compute(&job.header, nonce);
+                for _ in 0..10000 {
+                    let mut hasher = Sha256::new();
+                    hasher.update(&job.header);
+                    hasher.update(&nonce.to_le_bytes());
+                    let hash = hasher.finalize();
                     
-                    if check_target(&hash, &target) {
+                    let hash_bytes: [u8; 32] = hash.into();
+                    
+                    if check_target(&hash_bytes, &target) {
                         return Some(Share {
                             job_id: job.id.clone(),
                             nonce,
-                            hash: hash.to_vec(),
+                            hash: hash_bytes.to_vec(),
                             device_id: device.id.clone(),
                             timestamp: chrono::Utc::now(),
                         });
@@ -49,22 +50,6 @@ pub async fn mine(
     }
 }
 
-fn gxhash_compute(header: &[u8], nonce: u64) -> [u8; 32] {
-    let mut hasher = Hasher::new();
-    hasher.update(header);
-    hasher.update(&nonce.to_le_bytes());
-    hasher.update(&(nonce ^ 0xDEADBEEF).to_le_bytes());
-    
-    let hash1 = hasher.finalize();
-    
-    let mut hasher2 = Hasher::new();
-    hasher2.update(hash1.as_bytes());
-    hasher2.update(&nonce.to_be_bytes());
-    
-    let hash2 = hasher2.finalize();
-    *hash2.as_bytes()
-}
-
 fn check_target(hash: &[u8; 32], target: &[u8]) -> bool {
     if target.is_empty() {
         return hash[0] == 0 && hash[1] == 0;
@@ -78,4 +63,20 @@ fn check_target(hash: &[u8; 32], target: &[u8]) -> bool {
         }
     }
     true
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_check_target() {
+        let hash = [0u8; 32];
+        let target = vec![0xFF; 32];
+        assert!(check_target(&hash, &target));
+        
+        let hash = [0xFF; 32];
+        let target = vec![0x00; 32];
+        assert!(!check_target(&hash, &target));
+    }
 }

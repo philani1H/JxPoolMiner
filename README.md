@@ -39,30 +39,46 @@
 
 ## Installation
 
-### Windows
+### Quick Install
+
+#### Linux/macOS (One-liner)
+
+```bash
+curl -sSL https://raw.githubusercontent.com/philani1H/JxPoolMiner/main/install.sh | bash
+```
+
+#### Windows
+
+Download and run: [JxPoolMiner-Setup.exe](https://github.com/philani1H/JxPoolMiner/releases/latest/download/JxPoolMiner-Setup.exe)
+
+### Platform-Specific
+
+#### Windows
 
 1. Download `JxPoolMiner-Setup.exe` from [Releases](https://github.com/philani1H/JxPoolMiner/releases)
 2. Run the installer
 3. Launch JxPoolMiner from Start Menu
 
-### macOS
+#### macOS
 
 1. Download `JxPoolMiner.dmg` from [Releases](https://github.com/philani1H/JxPoolMiner/releases)
 2. Open the DMG and drag JxPoolMiner to Applications
 3. Launch from Applications folder
 
-### Linux
+#### Linux
 
 ```bash
 # Download and install
-wget https://github.com/philani1H/JxPoolMiner/releases/latest/download/jxpoolminer-linux.tar.gz
-tar -xzf jxpoolminer-linux.tar.gz
-cd jxpoolminer
+wget https://github.com/philani1H/JxPoolMiner/releases/latest/download/jxpoolminer-linux-x86_64.tar.gz
+tar -xzf jxpoolminer-linux-x86_64.tar.gz
+cd jxpoolminer-1.0.0-linux
 ./install.sh
 
 # Run
 jxpoolminer
 ```
+
+For detailed installation instructions, see [INSTALL.md](INSTALL.md).
 
 ## Quick Start
 
@@ -92,47 +108,64 @@ jxpoolminer
 
 ## Building from Source
 
-### Prerequisites
-
-- Rust 1.70 or higher
-- CMake (for RocksDB)
-- OpenSSL development libraries
-
-### Build Steps
+### Quick Build
 
 ```bash
 # Clone repository
 git clone https://github.com/philani1H/JxPoolMiner.git
 cd JxPoolMiner
 
-# Build
+# Build release binary
+make release
+
+# Or use cargo directly
 cargo build --release
 
 # Run
-cargo run --release
+./target/release/jxpoolminer
 ```
 
-### Platform-Specific Dependencies
+### Create Installable Package
 
-**Windows:**
-```powershell
-# Install Visual Studio Build Tools
-# Install CMake
+```bash
+# Create platform-specific installer
+./build-installers.sh
+
+# Or use the package script
+./package.sh
+
+# Or use Make
+make package
+```
+
+### Prerequisites
+
+- **Rust**: 1.70 or higher
+- **CMake**: For building dependencies
+- **OpenSSL**: Development libraries
+
+#### Platform-Specific Dependencies
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt-get install -y build-essential cmake libssl-dev pkg-config
+```
+
+**Linux (Fedora):**
+```bash
+sudo dnf install -y gcc cmake openssl-devel pkg-config
 ```
 
 **macOS:**
 ```bash
-brew install cmake openssl
+brew install cmake openssl pkg-config
 ```
 
-**Linux:**
-```bash
-# Ubuntu/Debian
-sudo apt-get install cmake libssl-dev pkg-config
+**Windows:**
+- Install [Visual Studio Build Tools 2022](https://visualstudio.microsoft.com/downloads/)
+- Install [CMake](https://cmake.org/download/)
 
-# Fedora
-sudo dnf install cmake openssl-devel
-```
+For detailed build instructions, see [BUILD.md](BUILD.md).
 
 ## Configuration
 
