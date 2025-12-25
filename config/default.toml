@@ -9,5 +9,7 @@ auto_assign_algorithms = true
 
 [pool]
 primary = "stratum+tcp://localhost:3333"
-wallet_address = "test_wallet_address"
-worker_name = "jxpoolminer_worker1"
+fallback = "stratum+tcp://127.0.0.1:3333"
+wallet_address = "GXC_YOUR_WALLET_ADDRESS_HERE"
+worker_name = "worker1"
+use_tls = false

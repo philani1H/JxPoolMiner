@@ -1,6 +1,6 @@
 # JxPoolMiner
 
-**Professional Cross-Platform Mining Software with Modern GUI**
+**Professional Cross-Platform GXC Mining Software with Modern GUI**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org/)
@@ -39,30 +39,46 @@
 
 ## Installation
 
-### Windows
+### Quick Install
+
+#### Linux/macOS (One-liner)
+
+```bash
+curl -sSL https://raw.githubusercontent.com/philani1H/JxPoolMiner/main/install.sh | bash
+```
+
+#### Windows
+
+Download and run: [JxPoolMiner-Setup.exe](https://github.com/philani1H/JxPoolMiner/releases/latest/download/JxPoolMiner-Setup.exe)
+
+### Platform-Specific
+
+#### Windows
 
 1. Download `JxPoolMiner-Setup.exe` from [Releases](https://github.com/philani1H/JxPoolMiner/releases)
 2. Run the installer
 3. Launch JxPoolMiner from Start Menu
 
-### macOS
+#### macOS
 
 1. Download `JxPoolMiner.dmg` from [Releases](https://github.com/philani1H/JxPoolMiner/releases)
 2. Open the DMG and drag JxPoolMiner to Applications
 3. Launch from Applications folder
 
-### Linux
+#### Linux
 
 ```bash
 # Download and install
-wget https://github.com/philani1H/JxPoolMiner/releases/latest/download/jxpoolminer-linux.tar.gz
-tar -xzf jxpoolminer-linux.tar.gz
-cd jxpoolminer
+wget https://github.com/philani1H/JxPoolMiner/releases/latest/download/jxpoolminer-linux-x86_64.tar.gz
+tar -xzf jxpoolminer-linux-x86_64.tar.gz
+cd jxpoolminer-1.0.0-linux
 ./install.sh
 
 # Run
 jxpoolminer
 ```
+
+For detailed installation instructions, see [INSTALL.md](INSTALL.md).
 
 ## Quick Start
 
@@ -71,11 +87,15 @@ jxpoolminer
 ```toml
 # config/default.toml
 [pool]
-primary = "stratum+tcp://pool.jxminer.com:3333"
-fallback = "stratum+tcp://backup.jxminer.com:3333"
-wallet_address = "your_wallet_address"
+primary = "stratum+tcp://localhost:3333"
+fallback = "stratum+tcp://127.0.0.1:3333"
+wallet_address = "GXC_YOUR_WALLET_ADDRESS_HERE"
 worker_name = "worker1"
+use_tls = false
 ```
+
+**Note**: By default, JxPoolMiner connects to `localhost:3333` for local stratum server.
+You can change this to any GXC pool URL in the configuration file.
 
 ### 2. Launch Application
 
@@ -92,47 +112,64 @@ jxpoolminer
 
 ## Building from Source
 
-### Prerequisites
-
-- Rust 1.70 or higher
-- CMake (for RocksDB)
-- OpenSSL development libraries
-
-### Build Steps
+### Quick Build
 
 ```bash
 # Clone repository
 git clone https://github.com/philani1H/JxPoolMiner.git
 cd JxPoolMiner
 
-# Build
+# Build release binary
+make release
+
+# Or use cargo directly
 cargo build --release
 
 # Run
-cargo run --release
+./target/release/jxpoolminer
 ```
 
-### Platform-Specific Dependencies
+### Create Installable Package
 
-**Windows:**
-```powershell
-# Install Visual Studio Build Tools
-# Install CMake
+```bash
+# Create platform-specific installer
+./build-installers.sh
+
+# Or use the package script
+./package.sh
+
+# Or use Make
+make package
+```
+
+### Prerequisites
+
+- **Rust**: 1.70 or higher
+- **CMake**: For building dependencies
+- **OpenSSL**: Development libraries
+
+#### Platform-Specific Dependencies
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt-get install -y build-essential cmake libssl-dev pkg-config
+```
+
+**Linux (Fedora):**
+```bash
+sudo dnf install -y gcc cmake openssl-devel pkg-config
 ```
 
 **macOS:**
 ```bash
-brew install cmake openssl
+brew install cmake openssl pkg-config
 ```
 
-**Linux:**
-```bash
-# Ubuntu/Debian
-sudo apt-get install cmake libssl-dev pkg-config
+**Windows:**
+- Install [Visual Studio Build Tools 2022](https://visualstudio.microsoft.com/downloads/)
+- Install [CMake](https://cmake.org/download/)
 
-# Fedora
-sudo dnf install cmake openssl-devel
-```
+For detailed build instructions, see [BUILD.md](BUILD.md).
 
 ## Configuration
 
@@ -232,7 +269,7 @@ priority = 2
 
 | Algorithm | Hardware | Description |
 |-----------|----------|-------------|
-| **SHA-256** | ASIC | Bitcoin-style double SHA-256 hashing |
+| **SHA-256** | ASIC | Double SHA-256 hashing for GXC mining |
 | **Ethash** | GPU | Memory-hard algorithm for Ethereum-style mining |
 | **GXHash** | CPU | Randomized, ASIC-resistant algorithm |
 

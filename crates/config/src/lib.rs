@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
-use anyhow::Result;
+use anyhow::{Result, Context};
 use std::path::PathBuf;
+use std::fs;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
@@ -27,6 +28,7 @@ pub struct PoolConfig {
     pub fallback: Option<String>,
     pub wallet_address: String,
     pub worker_name: String,
+    pub use_tls: bool,
 }
 
 impl Default for Config {
@@ -41,21 +43,52 @@ impl Default for Config {
                 auto_assign_algorithms: true,
             },
             pool: PoolConfig {
-                primary: "stratum+tcp://pool.jxminer.com:3333".to_string(),
-                fallback: None,
-                wallet_address: "test_wallet".to_string(),
+                primary: "stratum+tcp://localhost:3333".to_string(),
+                fallback: Some("stratum+tcp://127.0.0.1:3333".to_string()),
+                wallet_address: "GXC_YOUR_WALLET_ADDRESS_HERE".to_string(),
                 worker_name: "worker1".to_string(),
+                use_tls: false,
             },
         }
     }
 }
 
+fn get_config_path() -> PathBuf {
+    let mut path = dirs::config_dir()
+        .unwrap_or_else(|| PathBuf::from("."));
+    path.push("jxpoolminer");
+    path.push("config.toml");
+    path
+}
+
 pub fn load_config() -> Result<Config> {
-    // Try to load from file, otherwise use default
-    Ok(Config::default())
+    let config_path = get_config_path();
+    
+    if config_path.exists() {
+        let contents = fs::read_to_string(&config_path)
+            .context("Failed to read config file")?;
+        let config: Config = toml::from_str(&contents)
+            .context("Failed to parse config file")?;
+        Ok(config)
+    } else {
+        let config = Config::default();
+        let _ = save_config(&config);
+        Ok(config)
+    }
 }
 
 pub fn save_config(config: &Config) -> Result<()> {
-    // Save config to file
+    let config_path = get_config_path();
+    
+    if let Some(parent) = config_path.parent() {
+        fs::create_dir_all(parent)
+            .context("Failed to create config directory")?;
+    }
+    
+    let contents = toml::to_string_pretty(config)
+        .context("Failed to serialize config")?;
+    fs::write(&config_path, contents)
+        .context("Failed to write config file")?;
+    
     Ok(())
 }
