@@ -87,12 +87,15 @@ For detailed installation instructions, see [INSTALL.md](INSTALL.md).
 ```toml
 # config/default.toml
 [pool]
-primary = "stratum+tcp://gxc-pool.example.com:3333"
-fallback = "stratum+tcp://gxc-pool-backup.example.com:3333"
+primary = "stratum+tcp://localhost:3333"
+fallback = "stratum+tcp://127.0.0.1:3333"
 wallet_address = "GXC_YOUR_WALLET_ADDRESS_HERE"
 worker_name = "worker1"
 use_tls = false
 ```
+
+**Note**: By default, JxPoolMiner connects to `localhost:3333` for local stratum server.
+You can change this to any GXC pool URL in the configuration file.
 
 ### 2. Launch Application
 

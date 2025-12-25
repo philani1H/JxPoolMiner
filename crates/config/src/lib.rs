@@ -43,8 +43,8 @@ impl Default for Config {
                 auto_assign_algorithms: true,
             },
             pool: PoolConfig {
-                primary: "stratum+tcp://gxc-pool.example.com:3333".to_string(),
-                fallback: Some("stratum+tcp://gxc-pool-backup.example.com:3333".to_string()),
+                primary: "stratum+tcp://localhost:3333".to_string(),
+                fallback: Some("stratum+tcp://127.0.0.1:3333".to_string()),
                 wallet_address: "GXC_YOUR_WALLET_ADDRESS_HERE".to_string(),
                 worker_name: "worker1".to_string(),
                 use_tls: false,

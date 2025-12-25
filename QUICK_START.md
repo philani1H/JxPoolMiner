@@ -127,10 +127,13 @@ jxpoolminer
 Click **⚙️ Settings** tab and enter:
 
 ```
-Pool URL: stratum+tcp://gxc-pool.example.com:3333
+Pool URL: stratum+tcp://localhost:3333
 Wallet Address: GXC_YOUR_WALLET_ADDRESS_HERE
 Worker Name: worker1
 ```
+
+**Default**: Connects to local stratum server on `localhost:3333`  
+**Custom Pool**: Change to your GXC pool URL (e.g., `stratum+tcp://pool.gxc.com:3333`)
 
 **Or edit the config file:**
 ```bash
