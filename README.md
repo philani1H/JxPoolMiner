@@ -1,6 +1,6 @@
 # JxPoolMiner
 
-**Professional Cross-Platform Mining Software with Modern GUI**
+**Professional Cross-Platform GXC Mining Software with Modern GUI**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org/)
@@ -87,10 +87,11 @@ For detailed installation instructions, see [INSTALL.md](INSTALL.md).
 ```toml
 # config/default.toml
 [pool]
-primary = "stratum+tcp://pool.jxminer.com:3333"
-fallback = "stratum+tcp://backup.jxminer.com:3333"
-wallet_address = "your_wallet_address"
+primary = "stratum+tcp://gxc-pool.example.com:3333"
+fallback = "stratum+tcp://gxc-pool-backup.example.com:3333"
+wallet_address = "GXC_YOUR_WALLET_ADDRESS_HERE"
 worker_name = "worker1"
+use_tls = false
 ```
 
 ### 2. Launch Application
@@ -265,7 +266,7 @@ priority = 2
 
 | Algorithm | Hardware | Description |
 |-----------|----------|-------------|
-| **SHA-256** | ASIC | Bitcoin-style double SHA-256 hashing |
+| **SHA-256** | ASIC | Double SHA-256 hashing for GXC mining |
 | **Ethash** | GPU | Memory-hard algorithm for Ethereum-style mining |
 | **GXHash** | CPU | Randomized, ASIC-resistant algorithm |
 

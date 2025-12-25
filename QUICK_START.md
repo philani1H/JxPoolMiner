@@ -2,7 +2,7 @@
 
 ## What is JxPoolMiner?
 
-**JxPoolMiner is a DESKTOP APPLICATION** (like TeamViewer, Chrome, or any software you install on your computer)
+**JxPoolMiner is a DESKTOP APPLICATION for mining GXC (GXChain) cryptocurrency** (like TeamViewer, Chrome, or any software you install on your computer)
 
 - ✅ **Native GUI** - Opens a window on your desktop
 - ✅ **No browser needed** - Runs directly on your computer
@@ -127,8 +127,8 @@ jxpoolminer
 Click **⚙️ Settings** tab and enter:
 
 ```
-Pool URL: stratum+tcp://your-pool.com:3333
-Wallet Address: your_wallet_address_here
+Pool URL: stratum+tcp://gxc-pool.example.com:3333
+Wallet Address: GXC_YOUR_WALLET_ADDRESS_HERE
 Worker Name: worker1
 ```
 

@@ -148,7 +148,7 @@ impl MinerApp {
             ui.group(|ui| {
                 ui.vertical(|ui| {
                     ui.label("Pending Rewards");
-                    ui.heading(format!("{:.8} BTC", pending_rewards));
+                    ui.heading(format!("{:.8} GXC", pending_rewards));
                 });
             });
         });
@@ -276,13 +276,33 @@ impl MinerApp {
                     
                     // Action button
                     let is_mining = matches!(device.status, jxpoolminer_core::DeviceStatus::Mining);
+                    let device_id = device.id.clone();
+                    let engine = self.engine.clone();
+                    let runtime = self.runtime.clone();
+                    
                     if is_mining {
                         if ui.button("Stop").clicked() {
-                            // TODO: Stop mining on this device
+                            runtime.spawn(async move {
+                                if let Err(e) = engine.stop_mining(&device_id).await {
+                                    tracing::error!("Failed to stop mining on {}: {}", device_id, e);
+                                }
+                            });
                         }
                     } else {
                         if ui.button("Start").clicked() {
-                            // TODO: Start mining on this device
+                            let pool_client = self.pool_client.clone();
+                            runtime.spawn(async move {
+                                match pool_client.receive_job().await {
+                                    Ok(job) => {
+                                        if let Err(e) = engine.start_mining(&device_id, job).await {
+                                            tracing::error!("Failed to start mining on {}: {}", device_id, e);
+                                        }
+                                    }
+                                    Err(e) => {
+                                        tracing::error!("Failed to get job from pool: {}", e);
+                                    }
+                                }
+                            });
                         }
                     }
                 });
@@ -325,13 +345,24 @@ impl MinerApp {
         
         ui.add_space(20.0);
         
-        if ui.button("Test Connection").clicked() {
-            // TODO: Test connection
-        }
-        
-        if ui.button("Reconnect").clicked() {
-            // TODO: Reconnect
-        }
+        ui.horizontal(|ui| {
+            if ui.button("Test Connection").clicked() {
+                let pool_client = self.pool_client.clone();
+                let runtime = self.runtime.clone();
+                runtime.spawn(async move {
+                    if pool_client.is_connected().await {
+                        tracing::info!("✅ Pool connection test: SUCCESS");
+                    } else {
+                        tracing::warn!("❌ Pool connection test: FAILED");
+                    }
+                });
+            }
+            
+            if ui.button("Reconnect").clicked() {
+                tracing::info!("Reconnecting to pool...");
+                // Pool client will auto-reconnect on next operation
+            }
+        });
         
         ui.add_space(10.0);
         ui.label("Connection Logs:");
@@ -551,13 +582,45 @@ impl MinerApp {
         });
         
         ui.add_space(15.0);
-        if ui.button("Export Debug Info").clicked() {
-            // TODO: Export debug information
-        }
-        
-        if ui.button("Clear Cache").clicked() {
-            // TODO: Clear cache
-        }
+        ui.horizontal(|ui| {
+            if ui.button("Export Debug Info").clicked() {
+                let timestamp = chrono::Utc::now().format("%Y%m%d_%H%M%S");
+                let filename = format!("jxpoolminer_debug_{}.txt", timestamp);
+                tracing::info!("Exporting debug info to: {}", filename);
+                
+                // Export debug information
+                let mut debug_info = String::new();
+                debug_info.push_str(&format!("JxPoolMiner Debug Info\n"));
+                debug_info.push_str(&format!("Version: {}\n", env!("CARGO_PKG_VERSION")));
+                debug_info.push_str(&format!("Timestamp: {}\n\n", chrono::Utc::now()));
+                debug_info.push_str(&format!("Devices: {}\n", devices.len()));
+                for device in &devices {
+                    debug_info.push_str(&format!("  - {}: {:?}\n", device.id, device.status));
+                }
+                
+                if let Err(e) = std::fs::write(&filename, debug_info) {
+                    tracing::error!("Failed to export debug info: {}", e);
+                } else {
+                    tracing::info!("✅ Debug info exported successfully");
+                }
+            }
+            
+            if ui.button("Refresh Devices").clicked() {
+                let devices_arc = self.devices.clone();
+                let runtime = self.runtime.clone();
+                runtime.spawn(async move {
+                    match jxpoolminer_devices::detect_all().await {
+                        Ok(new_devices) => {
+                            *devices_arc.write().await = new_devices;
+                            tracing::info!("✅ Devices refreshed");
+                        }
+                        Err(e) => {
+                            tracing::error!("Failed to refresh devices: {}", e);
+                        }
+                    }
+                });
+            }
+        });
     }
 }
 

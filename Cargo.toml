@@ -3,7 +3,7 @@ name = "jxpoolminer"
 version = "1.0.0"
 edition = "2021"
 authors = ["JxPoolMiner Team"]
-description = "Professional cross-platform mining software with GUI"
+description = "Professional cross-platform GXC mining software with GUI"
 license = "MIT"
 repository = "https://github.com/philani1H/JxPoolMiner"
 

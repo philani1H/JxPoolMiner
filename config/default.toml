@@ -8,6 +8,8 @@ auto_detect_devices = true
 auto_assign_algorithms = true
 
 [pool]
-primary = "stratum+tcp://localhost:3333"
-wallet_address = "test_wallet_address"
-worker_name = "jxpoolminer_worker1"
+primary = "stratum+tcp://gxc-pool.example.com:3333"
+fallback = "stratum+tcp://gxc-pool-backup.example.com:3333"
+wallet_address = "GXC_YOUR_WALLET_ADDRESS_HERE"
+worker_name = "worker1"
+use_tls = false

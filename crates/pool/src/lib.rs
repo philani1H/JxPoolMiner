@@ -18,9 +18,9 @@ pub struct PoolConfig {
 impl Default for PoolConfig {
     fn default() -> Self {
         Self {
-            primary: "stratum+tcp://pool.jxminer.com:3333".to_string(),
-            fallback: None,
-            wallet_address: "test_wallet".to_string(),
+            primary: "stratum+tcp://gxc-pool.example.com:3333".to_string(),
+            fallback: Some("stratum+tcp://gxc-pool-backup.example.com:3333".to_string()),
+            wallet_address: "GXC_YOUR_WALLET_ADDRESS_HERE".to_string(),
             worker_name: "worker1".to_string(),
             use_tls: false,
         }
