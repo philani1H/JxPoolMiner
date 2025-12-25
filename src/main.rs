@@ -8,7 +8,7 @@
 //! - Auto-update system
 
 use anyhow::Result;
-use tracing::{info, error};
+use tracing::info;
 use tracing_subscriber;
 
 #[tokio::main]
@@ -40,7 +40,14 @@ async fn main() -> Result<()> {
     
     // Connect to pool
     info!("🌐 Connecting to pool: {}", config.pool.primary);
-    let pool_client = jxpoolminer_pool::Client::connect(&config.pool).await?;
+    let pool_config = jxpoolminer_pool::PoolConfig {
+        primary: config.pool.primary.clone(),
+        fallback: config.pool.fallback.clone(),
+        wallet_address: config.pool.wallet_address.clone(),
+        worker_name: config.pool.worker_name.clone(),
+        use_tls: false,
+    };
+    let pool_client = jxpoolminer_pool::Client::connect(&pool_config).await?;
     
     // Initialize statistics collector
     info!("📊 Starting statistics collector...");
