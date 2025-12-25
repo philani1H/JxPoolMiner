@@ -8,6 +8,6 @@ auto_detect_devices = true
 auto_assign_algorithms = true
 
 [pool]
-primary = "stratum+tcp://pool.jxminer.com:3333"
-wallet_address = "your_wallet_address_here"
-worker_name = "worker1"
+primary = "stratum+tcp://localhost:3333"
+wallet_address = "test_wallet_address"
+worker_name = "jxpoolminer_worker1"
